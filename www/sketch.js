@@ -2,6 +2,33 @@ document.addEventListener("deviceready", () => {
     navigator.accelerometer.watchAcceleration(onSuccess, onError, { frequency: 30 });
 }, false);
 
+let c = [];
+
+class Circle {
+    constructor(x, y, s) {
+        this.xDw = x;
+        this.yDw = y;
+        this.s = s;
+        this.disD;
+    }
+    ptDown() {
+        fill(0, 255, 0);
+        ellipse(this.xDw, this.yDw, this.s, this.s);
+    }
+
+    del() {
+        // console.log(`x:${mouseX}, y:${mouseY}`);
+        this.disD = dist(this.xDw, this.yDw, x, y);
+        if (this.disD < this.s) {
+            fill(0);
+            text("down....", this.xDw, this.yDw);
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+}
+
 let accX = 0, accY = 0, accZ = 0;
 let x, y;
 let disU;
@@ -38,11 +65,20 @@ function draw() {
 
     disU = dist(x, y, xUp, yUp);
     if (disU < 100) {
+        fill(0);
         text("up!!!!!!", xUp, yUp);
         xUp = random(0, width);
         yUp = random(0, height);
         console.log("up");
+    }
 
+
+
+    for (let i = 0; i < 4; i++) {
+        c.push(new Circle(random(0, width), random(0, height), 80)); //pushは関数
+        c[i].ptDown();
+        if (c[i].del() == 1) 
+            c.splice(i, 1);
     }
 
 }
