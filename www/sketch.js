@@ -4,6 +4,11 @@ document.addEventListener("deviceready", () => {
 
 let c = [];
 
+let timeLimit = 11;
+let time;
+
+let timeBegin;
+
 class Circle {
     constructor(x, y, s) {
         this.xDw = x;
@@ -38,50 +43,127 @@ function setup() {
     x = width / 2;
     y = height / 2;
 
+    scoreResult = 0;
+    scene = "start";
+
     xUp = random(0, width);
     yUp = random(0, height);
 
 }
 function draw() {
-    // background(255, 255, 255);
-    fill(255, 255, 255, 160);
-    rect(0, 0, width, height);
+    if (scene == "start")
+        startScene();
 
-    fill(255, 0, 0);
-    textSize(40);
-    text(`x=${accX.toPrecision(3)}`, 10, 40);
-    text(`y=${accY.toPrecision(3)}`, 10, 80);
-    text(`z=${accZ.toPrecision(3)}`, 10, 120);
+    if (scene == "play") {
+        // background(255, 255, 255);
+        fill(255, 255, 255, 160);
+        rect(0, 0, width, height);
 
-    let theta = degrees(Math.atan(accX / accY));
-    text(`theta=${theta.toPrecision(3)}`, 10, 160);
+        fill(255, 0, 0);
+        textSize(40);
+        text(`x=${accX.toPrecision(3)}`, 10, 40);
+        text(`y=${accY.toPrecision(3)}`, 10, 80);
+        text(`z=${accZ.toPrecision(3)}`, 10, 120);
 
-    ellipse(x, y, 80, 80);
-    x = constrain(x - accX * 5, 50, width - 50);
-    y = constrain(y + accY * 5, 50, height - 50);
+        let theta = degrees(Math.atan(accX / accY));
+        text(`theta=${theta.toPrecision(3)}`, 10, 160);
 
-    fill(255, 255, 0);
-    ellipse(xUp, yUp, 120, 120);
+        ellipse(x, y, 80, 80);
+        x = constrain(x - accX * 5, 50, width - 50);
+        y = constrain(y + accY * 5, 50, height - 50);
 
-    disU = dist(x, y, xUp, yUp);
-    if (disU < 100) {
-        fill(0);
-        text("up!!!!!!", xUp, yUp);
-        xUp = random(0, width);
-        yUp = random(0, height);
-        console.log("up");
+        fill(255, 255, 0);
+        ellipse(xUp, yUp, 120, 120);
+
+        disU = dist(x, y, xUp, yUp);
+        if (disU < 100) {
+            fill(0);
+            text("up!!!!!!", xUp, yUp);
+            xUp = random(0, width);
+            yUp = random(0, height);
+            scoreCal(10);
+            console.log("up");
+        }
+
+
+
+        for (let i = 0; i < 4; i++) {
+            c.push(new Circle(random(0, width), random(0, height), 80)); //pushは関数
+            c[i].ptDown();
+            if (c[i].del() == 1){
+                c.splice(i, 1);
+                scoreCal(-10);
+            }
+        }
+
+        scoreText();
+
+        time = timeLimit - (millis() - timeBegin) / 1000;
+        text("制限時間→ " + int(time), 100, 200);
+
+        if (time < 0) 
+        scene = "result";
     }
 
+    if (scene == "result")
+        endScene();
+
+}
+
+function startScene() {
+    background(255, 0, 255);
+    fill(0);
+    textSize(48);
 
 
-    for (let i = 0; i < 4; i++) {
-        c.push(new Circle(random(0, width), random(0, height), 80)); //pushは関数
-        c[i].ptDown();
-        if (c[i].del() == 1) 
-            c.splice(i, 1);
+    text("スタート画面", 50, 400);
+    text("画面タップして", 30, 500);
+    if (mouseIsPressed) {
+        timeBegin = millis();
+        scene = "play";
     }
 
 }
+
+function scoreCal(score) {
+    scoreResult += score;
+}
+
+function scoreText() {
+    fill(0);
+    textSize(24);
+    text("score→" + scoreResult, 10, 30);
+}
+
+function endScene() {
+    background(0);
+
+    //スタート、コンティニューボタン
+    fill(0, 255, 0);
+    ellipse(65, 590, 70, 70);
+
+    fill(0, 0, 255);
+    ellipse(65, 693, 70, 70);
+
+    fill(255);
+    text("結果", 50, 450);
+    text("ｓ   ←スタート画面", 50, 600);
+    text("ｃ   ←コンティニュー", 50, 700);
+    textSize(30);
+    text(scoreResult + "pt", 50, 500);
+    if (mouseIsPressed) {
+        if (dist(65, 693, mouseX, mouseY) <= 70) {
+            scoreResult = 0;
+            timeBegin = millis();
+            scene = "play";
+        }
+        if (dist(65, 590, mouseX, mouseY) <= 70) {
+            scoreResult = 0;
+            scene = "start";
+        }
+    }
+}
+
 
 function onSuccess(acceleration) {
     // グローバル変数にコピーして
