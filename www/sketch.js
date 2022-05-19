@@ -22,7 +22,6 @@ class Circle {
     }
 
     del() {
-        // console.log(`x:${mouseX}, y:${mouseY}`);
         this.disD = dist(this.xDw, this.yDw, x, y);
         if (this.disD < this.s) {
             fill(0);
@@ -61,12 +60,6 @@ function draw() {
 
         fill(255, 0, 0);
         textSize(40);
-        text(`x=${accX.toPrecision(3)}`, 10, 40);
-        text(`y=${accY.toPrecision(3)}`, 10, 80);
-        text(`z=${accZ.toPrecision(3)}`, 10, 120);
-
-        let theta = degrees(Math.atan(accX / accY));
-        text(`theta=${theta.toPrecision(3)}`, 10, 160);
 
         ellipse(x, y, 80, 80);
         x = constrain(x - accX * 5, 50, width - 50);
@@ -99,7 +92,7 @@ function draw() {
         scoreText();
 
         time = timeLimit - (millis() - timeBegin) / 1000;
-        text("制限時間→ " + int(time), 100, 200);
+        text("制限時間→ " + int(time), 10, 80);
 
         if (time < 0) 
         scene = "result";
@@ -111,13 +104,15 @@ function draw() {
 }
 
 function startScene() {
-    background(255, 0, 255);
+    background(160, 255, 255);
     fill(0);
     textSize(48);
-
-
-    text("スタート画面", 50, 400);
-    text("画面タップして", 30, 500);
+    text("イライラボール", 20, 300);
+    textSize(30);
+    text("画面タップしてスタート", 30, 550);
+textSize(25);
+    text("黄色に当たるとポイントup!", 10, 630);
+    text("緑に当たるとポイントdown...", 10, 660);
     if (mouseIsPressed) {
         timeBegin = millis();
         scene = "play";
