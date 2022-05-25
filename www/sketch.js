@@ -23,7 +23,7 @@ class Circle {
 
     del() {
         this.disD = dist(this.xDw, this.yDw, x, y);
-        if (this.disD < this.s) {
+        if (this.disD < 50 + xS/2) {
             fill(0);
             text("down....", this.xDw, this.yDw);
             return 1;
@@ -48,6 +48,9 @@ function setup() {
     xUp = random(0, width);
     yUp = random(0, height);
 
+    xS = 0;
+    upS = 0;
+
 }
 function draw() {
     if (scene == "start")
@@ -61,15 +64,15 @@ function draw() {
         fill(255, 0, 0);
         textSize(40);
 
-        ellipse(x, y, 80, 80);
+        ellipse(x, y, xS, xS);
         x = constrain(x - accX * 5, 50, width - 50);
         y = constrain(y + accY * 5, 50, height - 50);
 
         fill(255, 255, 0);
-        ellipse(xUp, yUp, 120, 120);
-
+        ellipse(xUp, yUp, upS, upS);
         disU = dist(x, y, xUp, yUp);
-        if (disU < 100) {
+
+        if (disU < xS/2 + upS/2) {
             fill(0);
             text("up!!!!!!", xUp, yUp);
             xUp = random(0, width);
@@ -81,21 +84,23 @@ function draw() {
 
 
         for (let i = 0; i < 4; i++) {
-            c.push(new Circle(random(0, width), random(0, height), 80)); //pushは関数
+            c.push(new Circle(random(0, width), random(0, height), 100)); //pushは関数
             c[i].ptDown();
-            if (c[i].del() == 1){
+            if (c[i].del() == 1) {
                 c.splice(i, 1);
                 scoreCal(-10);
             }
         }
+
+     
 
         scoreText();
 
         time = timeLimit - (millis() - timeBegin) / 1000;
         text("制限時間→ " + int(time), 10, 80);
 
-        if (time < 0) 
-        scene = "result";
+        if (time < 0)
+            scene = "result";
     }
 
     if (scene == "result")
@@ -109,13 +114,36 @@ function startScene() {
     textSize(48);
     text("イライラボール", 20, 300);
     textSize(30);
-    text("画面タップしてスタート", 30, 550);
-textSize(25);
-    text("黄色に当たるとポイントup!", 10, 630);
-    text("緑に当たるとポイントdown...", 10, 660);
+    text("選択してスタート", 30, 620);
+    textSize(25);
+    text("黄色に当たるとポイントup!", 10, 30);
+    text("緑に当たるとポイントdown...", 10, 60);
+
+    fill(160, 255, 160);
+    ellipse(65, 400, 70, 70);
+
+    fill(255, 0, 0);
+    ellipse(65, 503, 70, 70);
+    textSize(30);
+
+    fill(0);
+
+    text("Ｅ   ←イージーモード", 50, 410);
+    text("Ｈ   ←ハードモード", 50, 515);
+
     if (mouseIsPressed) {
-        timeBegin = millis();
-        scene = "play";
+        if (dist(65, 400, mouseX, mouseY) <= 70) {
+            xS = 80;
+            upS = 120;
+            timeBegin = millis();
+            scene = "play";
+        }
+        if (dist(65, 503, mouseX, mouseY) <= 70) {
+            xS = 120;
+            upS = 50;
+            timeBegin = millis();
+            scene = "play";
+        }
     }
 
 }
